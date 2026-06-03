@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isUser() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'user';
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // Allow users to read their own document (CRITICAL: prevents circular dependency)
+      allow get: if isAuthenticated() && request.auth.uid == userId;
+      // Allow authenticated users to list/read all users (needed for admin panel)
+      allow read, list: if isAuthenticated();
+      // Allow user creation on signup
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      // Allow users to update their own profile, admins can update anyone
+      allow update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+    
+    
+    // Legacy hoardings collection
+    match /hoardings/{hoardingId} {
+      allow read: if true; 
+      allow write: if isAuthenticated();
+    }
+    
+    // Categories collection
+    match /categories/{categoryName} {
+      allow read: if true; 
+      allow write: if isAuthenticated();
+      
+      // Hoardings subcollection (supports both direct access and collectionGroup queries)
+      match /hoardings/{hoardingId} {
+        allow read: if true; 
+        allow write: if isAuthenticated();
+      }
+    }
+    
+    // CollectionGroup query support for all hoardings subcollections
+    match /{path=**}/hoardings/{hoardingId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // Bookings collection
+    match /bookings/{bookingId} {
+      // Admins can do everything
+      allow read, write: if isAdmin();
+      // Users can only see their own bookings
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Public can create bookings (leads)
+      allow create: if true;
+      // Users can update their own bookings
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Contact messages collection (snake_case - legacy)
+    match /contact_messages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if true; // Allow public to create messages
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+    
+    // Contact messages collection (camelCase - current)
+    match /contactMessages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if true; // Allow public to create messages
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+    
+    // Hero section collection
+    match /hero_section/{heroId} {
+      allow read: if true; // Public read for website
+      allow write: if isAuthenticated();
+    }
+    
+    // Hoarding location collection (typo - legacy)
+    match /hordingloaction/{locationId} {
+      allow read: if true; // Public read for website
+      allow write: if isAuthenticated();
+    }
+    
+    // Hoarding location collection (correct spelling)
+    match /hordinglocation/{locationId} {
+      allow read: if true; // Public read for website
+      allow write: if isAuthenticated();
+    }
+    
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Admins can read all notifications
+      allow read: if isAdmin();
+      // System can create notifications (allow authenticated users to create)
+      allow create: if isAuthenticated();
+      // Users can update/delete their own notifications
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // Admins can do everything
+      allow write: if isAdmin();
+    }
+    
+    // Media collection
+    match /media/{mediaId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}

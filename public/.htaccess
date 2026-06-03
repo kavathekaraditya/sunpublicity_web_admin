@@ -1,0 +1,13 @@
+RewriteEngine On
+RewriteBase /
+
+# Rewrite admin requests to /admin/index.html if they are not real files/directories
+RewriteCond %{REQUEST_URI} ^/admin [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^admin/.*$ admin/index.html [L]
+
+# Rewrite other requests to /index.html if they are not real files/directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]

@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm ci && npm --prefix admin ci && npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/admin/:path*",
+      "destination": "/admin/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
+}

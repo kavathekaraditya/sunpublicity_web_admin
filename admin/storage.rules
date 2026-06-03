@@ -1,0 +1,26 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Hoarding images - Allow authenticated users
+    match /hoardings/{allPaths=**} {
+      allow read: if true; // Public read
+      allow write: if isAuthenticated(); // Authenticated users can upload
+    }
+    
+    // Media images
+    match /media/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // Default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

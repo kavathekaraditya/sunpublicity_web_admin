@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+/* Smooth scroll behavior for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reserve space for fixed navbar so content is not overlapped */
+:root {
+  --navbar-height: 72px; /* adjust if your navbar height changes */
+}
+
+body {
+  padding-top: var(--navbar-height);
+}

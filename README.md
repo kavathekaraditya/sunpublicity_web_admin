@@ -1,0 +1,211 @@
+# SunPublicity - Hoarding Management System
+
+A modern, full-stack hoarding/billboard management and booking platform built with React, Firebase, and Google Maps integration.
+
+## 🚀 Features
+
+- **Dynamic Billboard Listings** - Browse hoardings across multiple categories
+- **Real-time Firebase Integration** - Live data updates and management
+- **Interactive Maps** - Google Maps integration for location visualization
+- **User Authentication** - Secure login and registration system
+- **Wishlist System** - Save favorite hoardings for later
+- **Booking Management** - Complete booking workflow
+- **Admin Dashboard** - Manage hoardings, bookings, and contact messages
+- **Responsive Design** - Mobile-first, works on all devices
+- **Performance Optimized** - Code splitting, lazy loading, and caching
+
+## 📋 Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+- Firebase account
+- Google Maps API key
+
+## 🛠️ Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd SunPublicityNew
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   VITE_FIREBASE_API_KEY=your_firebase_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+   VITE_GOOGLE_MAPS_MAP_ID=your_map_id (optional)
+   ```
+
+4. **Firebase Setup**
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Authentication (Email/Password)
+   - Create Firestore database
+   - Set up Storage for images
+   - Copy your config values to `.env`
+
+5. **Google Maps Setup**
+   - Get API key from [Google Cloud Console](https://console.cloud.google.com/)
+   - Enable Maps JavaScript API
+   - Add API key to `.env`
+
+## 🚦 Running the Application
+
+### Development Mode
+```bash
+npm run dev
+```
+App will be available at `http://localhost:5173`
+
+### Production Build
+```bash
+npm run build
+npm run preview
+```
+
+### Linting
+```bash
+npm run lint
+```
+
+## 📁 Project Structure
+
+```
+src/
+├── component/          # Reusable components
+│   ├── Navbar.jsx
+│   ├── Hero.jsx
+│   ├── ErrorBoundary.jsx
+│   └── LazyImage.jsx
+├── pages/             # Route pages
+│   ├── Home.jsx
+│   ├── Login.jsx
+│   ├── DowntownBillboard.jsx
+│   └── ...
+├── context/           # React Context providers
+│   ├── AuthContext.jsx
+│   └── WishlistContext.jsx
+├── utils/             # Utility functions
+│   ├── logger.js
+│   └── cloudinary.js
+├── firebase.js        # Firebase configuration
+├── App.jsx           # Main app component
+└── main.jsx          # Entry point
+```
+
+## 🔥 Firebase Collections Structure
+
+### `categories/{categoryName}/hoardings/{hoardingId}`
+```javascript
+{
+  location: string,
+  size: string,
+  price: number,
+  available: boolean,
+  image: string,
+  latitude: string,
+  longitude: string,
+  expiryDate: string,
+  category: string
+}
+```
+
+### `users/{userId}`
+```javascript
+{
+  name: string,
+  email: string,
+  createdAt: timestamp
+}
+```
+
+### `bookings/{bookingId}`
+```javascript
+{
+  userId: string,
+  hoardingId: string,
+  startDate: string,
+  endDate: string,
+  totalPrice: number,
+  status: string,
+  createdAt: timestamp
+}
+```
+
+## 🎨 Available Categories
+
+- Auto Promotion
+- Digital Board
+- Hording
+- Shop Light Boards
+- Van Promotions
+- Wall Paintings
+- Unipole
+
+## 🔧 Tech Stack
+
+- **Frontend**: React 19, React Router v6
+- **Styling**: Tailwind CSS v4
+- **Backend**: Firebase (Firestore, Auth, Storage)
+- **Maps**: Google Maps API
+- **Build Tool**: Vite
+- **State Management**: React Context API
+- **Animations**: Framer Motion
+
+## 📦 Key Dependencies
+
+- `react` & `react-dom` - UI framework
+- `react-router-dom` - Routing
+- `firebase` - Backend services
+- `@react-google-maps/api` - Maps integration
+- `framer-motion` - Animations
+- `lucide-react` - Icons
+- `tailwindcss` - Styling
+
+## 🚀 Performance Features
+
+- **Code Splitting** - Lazy loaded routes
+- **Image Optimization** - Lazy loading with Intersection Observer
+- **Error Boundaries** - Graceful error handling
+- **Centralized Logging** - Development-friendly debugging
+
+## 🔒 Security
+
+- Firebase Authentication
+- Firestore Security Rules
+- Environment variable protection
+- Input validation
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is private and proprietary.
+
+## 👥 Support
+
+For support, email sunadvertise@gmail.com or call +91 9545454454
+
+## 🙏 Acknowledgments
+
+- Firebase for backend infrastructure
+- Google Maps for location services
+- Tailwind CSS for styling system
+- Vite for blazing fast development
