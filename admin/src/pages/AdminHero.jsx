@@ -21,6 +21,7 @@ const AdminHero = () => {
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
+    const [galleryImages, setGalleryImages] = useState([]);
 
     // Initial State matching schema
     const [formData, setFormData] = useState({
@@ -82,6 +83,12 @@ const AdminHero = () => {
                     overlay: { ...prev.overlay, ...data.overlay },
                     cta: { ...prev.cta, ...data.cta }
                 }));
+            }
+
+            const galleryRef = doc(db, 'hero_section', 'gallery');
+            const gallerySnap = await getDoc(galleryRef);
+            if (gallerySnap.exists()) {
+                setGalleryImages(gallerySnap.data().images || []);
             }
         } catch (error) {
             console.error('Error fetching hero data:', error);
@@ -170,6 +177,47 @@ const AdminHero = () => {
         }
     };
 
+    const handleGalleryUpload = async (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        const validFiles = files.filter(file => {
+            if (!file.type.startsWith('image/')) {
+                showMessage('error', `File ${file.name} is not a valid image`);
+                return false;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                showMessage('error', `Image ${file.name} is too large (> 10MB)`);
+                return false;
+            }
+            return true;
+        });
+
+        if (validFiles.length === 0) return;
+
+        try {
+            setUploading(true);
+            showMessage('success', `Uploading ${validFiles.length} image(s)...`);
+
+            const uploadPromises = validFiles.map(file => uploadToCloudinary(file));
+            const results = await Promise.all(uploadPromises);
+
+            const urls = results.map(r => r.url);
+            setGalleryImages(prev => [...prev, ...urls]);
+            showMessage('success', 'Images uploaded successfully');
+        } catch (error) {
+            console.error('Upload failed:', error);
+            showMessage('error', 'Failed to upload one or more images');
+        } finally {
+            setUploading(false);
+            e.target.value = '';
+        }
+    };
+
+    const handleRemoveGalleryImage = (index) => {
+        setGalleryImages(prev => prev.filter((_, idx) => idx !== index));
+    };
+
     const handleSave = async () => {
         try {
             setSaving(true);
@@ -180,7 +228,13 @@ const AdminHero = () => {
                 updatedAt: serverTimestamp()
             });
 
-            showMessage('success', 'Hero settings saved successfully');
+            const galleryRef = doc(db, 'hero_section', 'gallery');
+            await setDoc(galleryRef, {
+                images: galleryImages,
+                updatedAt: serverTimestamp()
+            });
+
+            showMessage('success', 'Hero settings and Gallery saved successfully');
         } catch (error) {
             console.error('Error saving settings:', error);
             showMessage('error', 'Failed to save settings');
@@ -290,60 +344,6 @@ const AdminHero = () => {
                     </div>
                 </Card>
 
-                {/* Overlay Settings */}
-                <Card className="p-6">
-                    <div className="flex items-center gap-2 mb-6 pb-2 border-b dark:border-gray-700">
-                        <Layers className="w-5 h-5 text-primary-600" />
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Overlay Gradient</h2>
-                    </div>
-
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Overlay</span>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.overlay.enabled}
-                                    onChange={(e) => handleChange('overlay', 'enabled', e.target.checked)}
-                                    className="sr-only peer"
-                                />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-                            </label>
-                        </div>
-
-                        <div className={`space-y-4 transition-opacity ${!formData.overlay.enabled ? 'opacity-50 pointer-events-none' : ''}`}>
-                            <div className="grid grid-cols-3 gap-3">
-                                {['from', 'via', 'to'].map((pos) => (
-                                    <div key={pos}>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1 capitalize">
-                                            {pos} Color
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.overlay[pos]}
-                                            onChange={(e) => handleChange('overlay', pos, e.target.value)}
-                                            placeholder={`e.g. black/50`}
-                                            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                            <p className="text-xs text-gray-500">Supports Tailwind colors (e.g. 'black/60', 'blue-900/40', 'transparent')</p>
-
-                            {/* Mini Preview of Gradient */}
-                            <div
-                                className="h-12 w-full rounded-md border border-gray-200 dark:border-gray-600"
-                                style={{
-                                    background: `linear-gradient(to right, 
-                                        ${formData.overlay.from.replace('black', '#000000').replace('/', '').replace('transparent', 'rgba(0,0,0,0)')}, 
-                                        ${formData.overlay.via.replace('black', '#000000').replace('transparent', 'rgba(0,0,0,0)')}, 
-                                        ${formData.overlay.to.replace('black', '#000000').replace('transparent', 'rgba(0,0,0,0)')})`
-                                    // Note: This is a rough preview. Real Tailwind classes render better.
-                                }}
-                            ></div>
-                        </div>
-                    </div>
-                </Card>
 
                 {/* CTA Settings */}
                 <Card className="p-6 md:col-span-2 xl:col-span-2">
@@ -420,6 +420,66 @@ const AdminHero = () => {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </Card>
+
+                {/* Gallery Settings */}
+                <Card className="p-6 md:col-span-2 xl:col-span-2">
+                    <div className="flex items-center gap-2 mb-6 pb-2 border-b dark:border-gray-700">
+                        <Upload className="w-5 h-5 text-primary-600" />
+                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Gallery Section Settings</h2>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Add Images to Gallery
+                            </label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleGalleryUpload}
+                                className="block w-full text-sm text-gray-500
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-primary-50 file:text-primary-700
+                                    hover:file:bg-primary-100
+                                    dark:file:bg-gray-700 dark:file:text-white
+                                    cursor-pointer"
+                                disabled={uploading}
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Upload multiple images (Max 10MB each).</p>
+                        </div>
+
+                        {galleryImages.length > 0 ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                                {galleryImages.map((url, idx) => (
+                                    <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border dark:border-gray-700 bg-gray-100">
+                                        <img
+                                            src={url}
+                                            alt={`Gallery ${idx}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveGalleryImage(idx)}
+                                            className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                            title="Delete Image"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500 border border-dashed rounded-lg dark:border-gray-700">
+                                No images in gallery. Upload some above!
+                            </div>
+                        )}
                     </div>
                 </Card>
 

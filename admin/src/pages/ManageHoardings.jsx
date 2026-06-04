@@ -721,20 +721,22 @@ const ManageHoardings = () => {
             Real-time hoarding management with advanced features
           </p>
         </div>
-        <button
-          onClick={handleAddHoarding}
-          className="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Add Hoarding</span>
-        </button>
-        <button
-          onClick={handleAddCategory}
-          className="flex items-center space-x-2 bg-secondary-600 hover:bg-secondary-700 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          <FolderOpen className="w-5 h-5" />
-          <span>Manage Categories</span>
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleAddCategory}
+            className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors shadow-md hover:shadow-lg"
+          >
+            <FolderOpen className="w-5 h-5" />
+            <span>Add Category</span>
+          </button>
+          <button
+            onClick={handleAddHoarding}
+            className="flex items-center space-x-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors shadow-md hover:shadow-lg"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Add Hoarding</span>
+          </button>
+        </div>
       </div>
 
       {/* Success/Error Message */}

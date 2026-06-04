@@ -1,6 +1,8 @@
 import './App.css'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import Footer from './component/Footer'
+import ScrollToTop from './component/ScrollToTop'
 
 // Lazy load all route components for code splitting
 const Home = lazy(() => import('./pages/Home'))
@@ -40,50 +42,60 @@ const PageLoader = () => (
 )
 
 function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
-        <Route path="/" element={<Home />} />
+    <div className="flex flex-col min-h-screen">
+      <ScrollToTop />
+      <div className="flex-grow">
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-        {/* Firebase category routes */}
-        <Route path="/auto-promotion" element={<AutoPromotion />} />
-        <Route path="/digital-board" element={<DigitalBoard />} />
-        <Route path="/hording" element={<Hording />} />
-        <Route path="/shop-boards" element={<ShopLightBoards />} />
-        <Route path="/van-promotions" element={<VanPromotions />} />
-        <Route path="/wall-paintings" element={<WallPaintings />} />
-        <Route path="/led-hording" element={<LEDHording />} />
+            {/* Firebase category routes */}
+            <Route path="/auto-promotion" element={<AutoPromotion />} />
+            <Route path="/digital-board" element={<DigitalBoard />} />
+            <Route path="/hording" element={<Hording />} />
+            <Route path="/shop-boards" element={<ShopLightBoards />} />
+            <Route path="/van-promotions" element={<VanPromotions />} />
+            <Route path="/wall-paintings" element={<WallPaintings />} />
+            <Route path="/led-hording" element={<LEDHording />} />
 
-        {/* Legacy routes & Dynamic Routing */}
-        <Route path="/downtown-billboard" element={<AutoPromotion />} />
-        <Route path="/:category/:id" element={<AdItemDetails />} />
-        <Route path="/highway" element={<Hording />} />
-        <Route path="/mall" element={<ShopLightBoards />} />
-        <Route path="/event" element={<VanPromotions />} />
-        <Route path="/led" element={<DigitalBoard />} />
-        <Route path="/led-hording-legacy" element={<LEDHording />} />
-        <Route path="/corporate" element={<WallPaintings />} />
-        <Route path="/unipole" element={<UnipoleDashboard />} />
+            {/* Legacy routes & Dynamic Routing */}
+            <Route path="/downtown-billboard" element={<AutoPromotion />} />
+            <Route path="/:category/:id" element={<AdItemDetails />} />
+            <Route path="/highway" element={<Hording />} />
+            <Route path="/mall" element={<ShopLightBoards />} />
+            <Route path="/event" element={<VanPromotions />} />
+            <Route path="/led" element={<DigitalBoard />} />
+            <Route path="/led-hording-legacy" element={<LEDHording />} />
+            <Route path="/corporate" element={<WallPaintings />} />
+            <Route path="/unipole" element={<UnipoleDashboard />} />
 
-        {/* Admin is a separate app mounted at /admin in production. */}
-        <Route path="/admin/*" element={<AdminRedirect />} />
+            {/* Admin is a separate app mounted at /admin in production. */}
+            <Route path="/admin/*" element={<AdminRedirect />} />
 
-        {/* Dynamic catch-all for any new categories */}
-        <Route path="/:category" element={<DynamicCategoryPage />} />
+            {/* Dynamic catch-all for any new categories */}
+            <Route path="/:category" element={<DynamicCategoryPage />} />
 
-        {/* Other routes */}
-        <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/map" element={<MapHoardings />} />
-        <Route path="/view-map" element={<ViewMap />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/booking" element={<Booking />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/admin/contact-messages" element={<ContactMessagesDashboard />} />
-        <Route path="/popup-demo" element={<PopupDemo />} />
-      </Routes>
-    </Suspense>
+            {/* Other routes */}
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/map" element={<MapHoardings />} />
+            <Route path="/view-map" element={<ViewMap />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/account" element={<Account />} />
+            <Route path="/admin/contact-messages" element={<ContactMessagesDashboard />} />
+            <Route path="/popup-demo" element={<PopupDemo />} />
+          </Routes>
+        </Suspense>
+      </div>
+      {!isAdminRoute && <Footer />}
+    </div>
   )
 }
 
 export default App
+
