@@ -34,7 +34,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 py-12 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-        
+
         {/* Company Info */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-white tracking-wide">Sun Publicity</h2>
@@ -48,7 +48,7 @@ export default function Footer() {
             <a href="#" className="text-gray-400 hover:text-white transition-colors">
               <Twitter size={20} />
             </a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+            <a href="https://www.instagram.com/sun_publicity5710/" className="text-gray-400 hover:text-white transition-colors">
               <Instagram size={20} />
             </a>
             <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -62,8 +62,8 @@ export default function Footer() {
           <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -71,8 +71,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -80,8 +80,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link 
-                to="/view-map" 
+              <Link
+                to="/view-map"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/view-map", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -89,8 +89,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link 
-                to="/wishlist" 
+              <Link
+                to="/wishlist"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/wishlist", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -98,8 +98,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/", "contact"); }}
                 className="hover:text-white transition-colors"
               >
@@ -114,8 +114,8 @@ export default function Footer() {
           <h3 className="text-lg font-semibold text-white mb-4">Services</h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link 
-                to="/hording" 
+              <Link
+                to="/hording"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/hording", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -123,8 +123,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link 
-                to="/digital-board" 
+              <Link
+                to="/digital-board"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/digital-board", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -132,8 +132,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link 
-                to="/auto-promotion" 
+              <Link
+                to="/auto-promotion"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/auto-promotion", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -141,8 +141,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link 
-                to="/shop-boards" 
+              <Link
+                to="/shop-boards"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/shop-boards", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -150,8 +150,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link 
-                to="/wall-paintings" 
+              <Link
+                to="/wall-paintings"
                 onClick={(e) => { e.preventDefault(); handleNavigation("/wall-paintings", null); }}
                 className="hover:text-white transition-colors"
               >
@@ -184,15 +184,15 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto mt-12 pt-6 border-t border-gray-800 text-sm text-center text-gray-500 flex flex-col md:flex-row justify-between items-center gap-4">
         <p>&copy; {new Date().getFullYear()} Sun Publicity. All rights reserved.</p>
         <div className="flex gap-4">
-          <Link 
-            to="/privacy-policy" 
+          <Link
+            to="/privacy-policy"
             onClick={(e) => { e.preventDefault(); handleNavigation("/privacy-policy", null); }}
             className="hover:text-white transition-colors"
           >
             Privacy Policy
           </Link>
-          <Link 
-            to="/terms-of-service" 
+          <Link
+            to="/terms-of-service"
             onClick={(e) => { e.preventDefault(); handleNavigation("/terms-of-service", null); }}
             className="hover:text-white transition-colors"
           >

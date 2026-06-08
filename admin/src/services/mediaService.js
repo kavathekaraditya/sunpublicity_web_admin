@@ -12,7 +12,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { uploadToCloudinary, extractPublicId } from '../config/cloudinary';
+import { uploadToCloudinary, extractPublicId, deleteFromCloudinary } from '../config/cloudinary';
 
 const MEDIA_COLLECTION = 'media';
 
@@ -63,13 +63,29 @@ export const uploadMediaImage = async (file) => {
 export const deleteMediaImage = async (imagePath) => {
   try {
     if (imagePath) {
-      console.log('Image reference removed. Public ID:', imagePath);
-      // Note: Client-side deletion is not recommended for Cloudinary
-      // The image will remain in Cloudinary but won't be referenced in the database
+      console.log('Deleting media image from Cloudinary. Path/URL:', imagePath);
+      
+      // imagePath could be a publicId or a URL
+      let publicId = imagePath;
+      
+      // If it's a URL, extract the publicId
+      if (imagePath.includes('cloudinary.com')) {
+        publicId = extractPublicId(imagePath);
+      }
+      
+      if (!publicId) {
+        console.warn('Could not extract publicId from:', imagePath);
+        return;
+      }
+      
+      const result = await deleteFromCloudinary(publicId, 'image');
+      console.log('Media image deleted from Cloudinary:', result);
+      
+      return result;
     }
   } catch (error) {
-    console.error('Error processing image deletion:', error);
-    // Don't throw error
+    console.error('Error deleting media image from Cloudinary:', error);
+    throw error; // Propagate error to prevent Firestore deletion if Cloudinary deletion fails
   }
 };
 

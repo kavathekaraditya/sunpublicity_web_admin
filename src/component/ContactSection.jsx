@@ -94,23 +94,23 @@ export default function ContactSection({
   };
 
   const getInputClasses = (fieldName) => {
-    const baseClasses = "w-full px-4 py-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:ring-2 outline-none transition-all";
+    const baseClasses = "w-full px-4 py-3 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-2 outline-none transition-all";
     const errorClasses = errors[fieldName]
       ? "border-2 border-red-500 focus:ring-red-500"
-      : "border border-transparent focus:ring-yellow-400";
+      : "border border-gray-300 focus:ring-yellow-500";
     return `${baseClasses} ${errorClasses}`;
   };
 
   return (
     <section
       id="contact"
-      className="relative w-full min-h-[60vh] md:min-h-[80vh] lg:min-h-screen bg-gray-900 text-white flex items-center py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
+      className="relative w-full min-h-[60vh] md:min-h-[80vh] lg:min-h-screen bg-white text-gray-900 flex items-center py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8"
     >
       <div className="max-w-6xl mx-auto w-full grid md:grid-cols-2 gap-8 md:gap-12">
         {/* Left side - Info */}
         <div className="flex flex-col justify-center">
-          <h2 className="text-4xl font-bold mb-6 text-yellow-400">Get in Touch</h2>
-          <p className="text-gray-300 mb-8 text-lg leading-relaxed">
+          <h2 className="text-4xl font-bold mb-6 text-yellow-600">Get in Touch</h2>
+          <p className="text-gray-600 mb-8 text-lg leading-relaxed">
             Need to advertise your brand or rent a billboard?
             We’re here to help you find the best spot for maximum visibility and impact.
           </p>
@@ -119,22 +119,22 @@ export default function ContactSection({
             <li className="flex items-start space-x-4">
               <span className="text-2xl">📍</span>
               <div>
-                <strong className="block text-yellow-400">Office</strong>
-                <span className="text-gray-300">{office}</span>
+                <strong className="block text-yellow-600">Office</strong>
+                <span className="text-gray-700">{office}</span>
               </div>
             </li>
             <li className="flex items-start space-x-4">
               <span className="text-2xl">📞</span>
               <div>
-                <strong className="block text-yellow-400">Phone</strong>
-                <span className="text-gray-300">{phoneInfo}</span>
+                <strong className="block text-yellow-600">Phone</strong>
+                <span className="text-gray-700">{phoneInfo}</span>
               </div>
             </li>
             <li className="flex items-start space-x-4">
               <span className="text-2xl">✉️</span>
               <div>
-                <strong className="block text-yellow-400">Email</strong>
-                <span className="text-gray-300">{emailInfo}</span>
+                <strong className="block text-yellow-600">Email</strong>
+                <span className="text-gray-700">{emailInfo}</span>
               </div>
             </li>
           </ul>
@@ -143,7 +143,7 @@ export default function ContactSection({
         {/* Right side - Form */}
         <div className="relative">
           {showSuccess && (
-            <div className="absolute -top-16 left-0 right-0 bg-green-500/20 border border-green-500 text-green-400 px-4 py-3 rounded-lg flex items-center justify-center animate-bounce">
+            <div className="absolute -top-16 left-0 right-0 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg flex items-center justify-center animate-bounce">
               <span className="mr-2">✅</span>
               Message sent successfully! We will contact you soon.
             </div>
@@ -151,9 +151,9 @@ export default function ContactSection({
 
           <form
             onSubmit={handleSubmit}
-            className="bg-gray-800 rounded-2xl p-8 shadow-2xl border border-gray-700"
+            className="bg-gray-50 rounded-2xl p-8 shadow-2xl border border-gray-200"
           >
-            <h3 className="text-2xl font-semibold mb-8 text-center text-white">Send Us a Message</h3>
+            <h3 className="text-2xl font-semibold mb-8 text-center text-gray-900">Send Us a Message</h3>
 
             <div className="space-y-5">
               <div>

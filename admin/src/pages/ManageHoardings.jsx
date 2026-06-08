@@ -14,7 +14,7 @@ import {
   setDoc
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import { uploadToCloudinary, extractPublicId } from '../config/cloudinary';
+import { uploadToCloudinary, extractPublicId, deleteFromCloudinary } from '../config/cloudinary';
 import {
   createHoarding,
   updateHoarding,
@@ -343,20 +343,25 @@ const ManageHoardings = () => {
   const deleteImageFromStorage = async (imageUrl) => {
     if (!imageUrl || !imageUrl.includes('cloudinary.com')) {
       console.log('No valid Cloudinary URL to delete');
-      return;
+      return { success: true };
     }
 
     try {
-      console.log('Image URL to delete:', imageUrl);
+      console.log('Deleting image from Cloudinary:', imageUrl);
       const publicId = extractPublicId(imageUrl);
-      console.log('Extracted public ID:', publicId);
+      
+      if (!publicId) {
+        console.warn('Could not extract publicId from URL:', imageUrl);
+        return { success: false, message: 'Invalid URL' };
+      }
 
-      // Note: Client-side deletion is not recommended for Cloudinary
-      // The image will remain in Cloudinary but won't be referenced in the database
-      console.log('Image reference removed from database. Image remains in Cloudinary.');
+      const result = await deleteFromCloudinary(publicId, 'image');
+      console.log('Image deleted from Cloudinary:', result);
+      
+      return result;
     } catch (error) {
-      console.log('Error processing image deletion:', error.message);
-      // Don't throw error, just log it
+      console.error('Error deleting image from Cloudinary:', error);
+      throw error; // Propagate error to prevent Firestore deletion
     }
   };
 
@@ -421,15 +426,38 @@ const ManageHoardings = () => {
     if (!window.confirm('Are you sure you want to delete this hoarding?')) return;
 
     try {
-      // Delete image from storage
-      if (hoarding.imageUrl) {
-        await deleteImageFromStorage(hoarding.imageUrl);
+      // Step 1: Delete ALL images from Cloudinary FIRST
+      const imageUrls = [];
+      
+      // Collect all image URLs
+      if (hoarding.imageUrls && Array.isArray(hoarding.imageUrls)) {
+        imageUrls.push(...hoarding.imageUrls);
+      } else if (hoarding.imageUrl) {
+        imageUrls.push(hoarding.imageUrl);
       }
 
-      // Delete document from Firestore using category-based structure
+      // Delete images from Cloudinary before deleting Firestore document
+      if (imageUrls.length > 0) {
+        console.log(`Deleting ${imageUrls.length} image(s) from Cloudinary...`);
+        
+        for (const url of imageUrls) {
+          try {
+            await deleteImageFromStorage(url);
+          } catch (error) {
+            console.error(`Failed to delete image ${url}:`, error);
+            // Show warning but continue
+            showMessage('warning', `Warning: Some images may not have been deleted from Cloudinary`);
+          }
+        }
+        
+        console.log('Images deleted from Cloudinary');
+      }
+
+      // Step 2: Delete document from Firestore AFTER Cloudinary deletion
       const categoryName = hoarding.category || hoarding.categoryName;
       await deleteHoarding(categoryName, hoarding.id);
-      showMessage('success', 'Hoarding deleted successfully');
+      
+      showMessage('success', 'Hoarding and all images deleted successfully');
     } catch (error) {
       console.error('Error deleting hoarding:', error);
       showMessage('error', `Failed to delete hoarding: ${error.message}`);

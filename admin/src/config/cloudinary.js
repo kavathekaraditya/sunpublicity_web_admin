@@ -48,21 +48,52 @@ export const uploadToCloudinary = async (file) => {
 };
 
 /**
- * Delete image from Cloudinary
- * Note: Deletion requires authentication and should ideally be done server-side
- * For unsigned uploads, you may need to enable "Allow Destroy" in Cloudinary settings
- * or implement a backend endpoint for deletion
+ * Delete image from Cloudinary via Firebase Cloud Function
+ * This is secure and requires admin authentication
  * 
- * @param {string} publicId - Public ID of the image to delete
+ * @param {string} publicId - Public ID of the image/video to delete
+ * @param {string} resourceType - 'image' or 'video' (default: 'image')
+ * @returns {Promise<{success: boolean, message: string}>}
  */
-export const deleteFromCloudinary = async (publicId) => {
-    // Note: Direct deletion from client-side is not recommended for security
-    // This is a placeholder - you should implement server-side deletion
-    console.warn('Cloudinary deletion should be handled server-side for security');
-    console.log('Image to delete:', publicId);
+export const deleteFromCloudinary = async (publicId, resourceType = 'image') => {
+    if (!publicId) {
+        console.warn('No publicId provided for deletion');
+        return { success: false, message: 'No publicId provided' };
+    }
 
-    // For now, we'll just log it. The image will remain in Cloudinary
-    // but won't be referenced in your database
+    try {
+        // Import Firebase Functions
+        const { getFunctions, httpsCallable } = await import('firebase/functions');
+        const { default: app } = await import('./firebase');
+        
+        const functions = getFunctions(app);
+        const deleteAsset = httpsCallable(functions, 'deleteCloudinaryAsset');
+
+        console.log(`Requesting deletion of ${resourceType}: ${publicId}`);
+
+        // Call Firebase Cloud Function
+        const result = await deleteAsset({ publicId, resourceType });
+
+        console.log('Cloudinary deletion result:', result.data);
+
+        return {
+            success: result.data.success,
+            message: result.data.message,
+            result: result.data.result
+        };
+
+    } catch (error) {
+        console.error('Error deleting from Cloudinary:', error);
+        
+        // Handle specific Firebase errors
+        if (error.code === 'unauthenticated') {
+            throw new Error('You must be logged in to delete assets');
+        } else if (error.code === 'permission-denied') {
+            throw new Error('Only admins can delete assets');
+        } else {
+            throw new Error(`Failed to delete asset: ${error.message}`);
+        }
+    }
 };
 
 /**

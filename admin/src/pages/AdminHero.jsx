@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import Card from '../components/Card';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { uploadToCloudinary } from '../config/cloudinary';
+import { uploadToCloudinary, deleteFromCloudinary, extractPublicId } from '../config/cloudinary';
 
 const AdminHero = () => {
     const [loading, setLoading] = useState(true);
@@ -214,8 +214,25 @@ const AdminHero = () => {
         }
     };
 
-    const handleRemoveGalleryImage = (index) => {
+    const handleRemoveGalleryImage = async (index) => {
+        const imageToRemove = galleryImages[index];
+        
+        // Remove from UI immediately
         setGalleryImages(prev => prev.filter((_, idx) => idx !== index));
+        
+        // Delete from Cloudinary in the background
+        if (imageToRemove) {
+            try {
+                const publicId = extractPublicId(imageToRemove);
+                if (publicId) {
+                    await deleteFromCloudinary(publicId, 'image');
+                    console.log('Gallery image deleted from Cloudinary:', imageToRemove);
+                }
+            } catch (error) {
+                console.error('Error deleting gallery image from Cloudinary:', error);
+                showMessage('warning', 'Image removed from gallery, but Cloudinary deletion may have failed');
+            }
+        }
     };
 
     const handleSave = async () => {

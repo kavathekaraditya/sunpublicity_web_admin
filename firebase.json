@@ -1,0 +1,21 @@
+{
+  "firestore": {
+    "rules": "admin/firestore.rules"
+  },
+  "storage": {
+    "rules": "admin/storage.rules"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firestore-debug.log",
+        "pubsub-debug.log"
+      ]
+    }
+  ]
+}
